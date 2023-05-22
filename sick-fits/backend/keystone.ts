@@ -7,6 +7,7 @@ import {
 } from '@keystone-next/keystone/session';
 
 import { User } from './schemas/User';
+import { Product } from './schemas/Product';
 
 const databaseURL =
   process.env.DATABASE_URL || 'mongodb://localhost/keystone-sick-fits-tutorial';
@@ -43,6 +44,7 @@ export default withAuth(
       // schema items go in here
       // schema is description of our data would look like, field/rltnships
       User,
+      Product,
     }),
     ui: {
       // TODO - show ui for folks who pass this test
