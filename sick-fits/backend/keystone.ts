@@ -1,5 +1,11 @@
 import 'dotenv/config';
 import { config, createSchema } from '@keystone-next/keystone/schema';
+import { createAuth } from '@keystone-next/auth';
+import {
+  statelessSessions,
+  withItemData,
+} from '@keystone-next/keystone/session';
+
 import { User } from './schemas/User';
 
 const databaseURL =
@@ -10,26 +16,42 @@ const sessionConfig = {
   secret: process.env.COOKIE_SECRET,
 };
 
-export default config({
-  server: {
-    cors: {
-      origin: [process.env.FRONTEND_URL],
-      credentials: true,
-    },
+const { withAuth } = createAuth({
+  listKey: 'User',
+  identityField: 'email',
+  secretField: 'password',
+  initFirstItem: {
+    fields: ['name', 'email', 'password'],
+    // TODO: add in initial roles here
   },
-  db: {
-    adapter: 'mongoose',
-    url: databaseURL,
-    // TODO - add data seeding
-  },
-  lists: createSchema({
-    // schema items go in here
-    // schema is description of our data would look like, field/rltnships
-    User,
-  }),
-  ui: {
-    // TODO - change this for roles,
-    isAccessAllowed: () => true,
-  },
-  // TODO: add session values here
 });
+
+export default withAuth(
+  config({
+    server: {
+      cors: {
+        origin: [process.env.FRONTEND_URL],
+        credentials: true,
+      },
+    },
+    db: {
+      adapter: 'mongoose',
+      url: databaseURL,
+      // TODO - add data seeding
+    },
+    lists: createSchema({
+      // schema items go in here
+      // schema is description of our data would look like, field/rltnships
+      User,
+    }),
+    ui: {
+      // TODO - show ui for folks who pass this test
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      isAccessAllowed: ({ session }) => !!session?.data,
+    },
+    session: withItemData(statelessSessions(sessionConfig), {
+      // this is a graphql query, you could make it `id email name`
+      User: 'id',
+    }),
+  })
+);
