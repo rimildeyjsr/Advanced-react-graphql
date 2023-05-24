@@ -20,6 +20,7 @@ const GlobalStyles = createGlobalStyle`
     --offwhite: #ededed;
     --maxWidth: 1000px;
     box-sizing: border-box;
+    font-size: 10px;
   }
 
   *, *:before, *:after {
