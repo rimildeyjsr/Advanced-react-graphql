@@ -1,10 +1,8 @@
-import PropTypes from 'prop-types';
+import { useRouter } from 'next/router';
 import SingleProduct from '../../components/SingleProduct';
 
-export default function SingleProductPage({ query }) {
-  return <SingleProduct id={query.id} />;
+export default function SingleProductPage() {
+  const router = useRouter();
+  const { id } = router.query;
+  return <SingleProduct id={id} />;
 }
-
-SingleProductPage.propTypes = {
-  query: PropTypes.any,
-};
