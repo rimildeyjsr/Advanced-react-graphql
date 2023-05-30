@@ -1,20 +1,65 @@
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/client';
 import useForm from '../lib/useForm';
 import Form from './styles/Form';
+import DisplayError from './ErrorMessage';
+import { ALL_PRODUCTS_QUERY } from './Products';
+
+const CREATE_PRODUCT_MUTATION = gql`
+mutation CREATE_PRODUCT_MUTATION(
+  $name: String!
+  $description: String!
+  $price: Int!
+  $image: Upload
+) {
+  createProduct({
+    data: {
+      name: $name 
+      description: $description
+      image: $image
+      status: "AVAILABLE"
+      photo: {
+        create: {
+          image: $image
+          altText: $name
+        }
+      }
+    }
+  }) {
+    id
+    price
+    description
+    name
+  }
+}
+`;
 
 export default function CreateProduct() {
-  const { inputs, handleChange } = useForm({
+  const { inputs, handleChange, clearForm } = useForm({
     image: '',
     name: 'Bookmark',
     price: 100,
     description: 'Awesome bookmark for you!',
   });
+
+  const [createProduct, { loading, error, data }] = useMutation(
+    CREATE_PRODUCT_MUTATION,
+    {
+      variables: inputs,
+      refetchQueries: [{ query: ALL_PRODUCTS_QUERY }],
+    }
+  );
+
   return (
     <Form
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
+        await createProduct();
+        clearForm();
       }}
     >
-      <fieldset aria-busy>
+      <DisplayError error={error} />
+      <fieldset disabled={loading} aria-busy={loading}>
         <label htmlFor="image">
           Image
           <input
