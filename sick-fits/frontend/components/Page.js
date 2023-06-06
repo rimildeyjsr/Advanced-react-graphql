@@ -15,10 +15,11 @@ const GlobalStyles = createGlobalStyle`
     --black: #393939;
     --grey: #3a3a3a;
     --gray: var(--grey);
-    --lightgrey: #e1e1e1;
-    --lightgray: var(--lightgrey);
+    --lightGrey: #e1e1e1;
+    --lightGray: var(--lightgrey);
     --offwhite: #ededed;
     --maxWidth: 1000px;
+    --bs: 0 12px 24px 0 rgba(0, 0, 0, 0.09);
     box-sizing: border-box;
     font-size: 10px;
   }
